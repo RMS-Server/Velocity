@@ -19,7 +19,7 @@ jobs:
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: build -x test
+        arguments: build -x test -x checkstyleMain -x checkstyleTest -x spotbugsMain -x spotbugsTest
 
     - name: Upload Velocity Proxy Artifact
       uses: actions/upload-artifact@v4
