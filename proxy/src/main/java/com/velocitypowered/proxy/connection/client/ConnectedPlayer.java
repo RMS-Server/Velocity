@@ -42,6 +42,7 @@ import com.velocitypowered.api.proxy.ConnectionRequestBuilder;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
+import com.velocitypowered.api.proxy.player.PlayerBandwidthStats;
 import com.velocitypowered.api.proxy.player.PlayerSettings;
 import com.velocitypowered.api.proxy.player.ResourcePackInfo;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -850,6 +851,11 @@ public class ConnectedPlayer implements MinecraftConnectionAssociation, Player {
   @Override
   public String getClientBrand() {
     return clientBrand;
+  }
+
+  @Override
+  public Optional<PlayerBandwidthStats> getBandwidthStats() {
+    return server.getBandwidthManager().getPlayerBandwidthStats(this);
   }
 
   void setClientBrand(String clientBrand) {

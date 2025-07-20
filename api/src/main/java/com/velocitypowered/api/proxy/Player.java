@@ -12,6 +12,7 @@ import com.velocitypowered.api.event.player.PlayerResourcePackStatusEvent;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.ChannelMessageSink;
 import com.velocitypowered.api.proxy.messages.ChannelMessageSource;
+import com.velocitypowered.api.proxy.player.PlayerBandwidthStats;
 import com.velocitypowered.api.proxy.player.PlayerSettings;
 import com.velocitypowered.api.proxy.player.ResourcePackInfo;
 import com.velocitypowered.api.proxy.player.TabList;
@@ -262,4 +263,11 @@ public interface Player extends CommandSource, Identified, InboundConnection,
    * @return the player's client brand
    */
   @Nullable String getClientBrand();
+
+  /**
+   * Gets the bandwidth statistics for this player.
+   *
+   * @return an Optional containing the player's bandwidth stats, empty if bandwidth tracking is disabled
+   */
+  Optional<PlayerBandwidthStats> getBandwidthStats();
 }

@@ -30,6 +30,7 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.PluginManager;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.player.BandwidthManager;
 import com.velocitypowered.api.proxy.player.ResourcePackInfo;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
@@ -43,6 +44,7 @@ import com.velocitypowered.proxy.command.builtin.ShutdownCommand;
 import com.velocitypowered.proxy.command.builtin.VelocityCommand;
 import com.velocitypowered.proxy.config.VelocityConfiguration;
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
+import com.velocitypowered.proxy.connection.player.VelocityBandwidthManager;
 import com.velocitypowered.proxy.connection.player.VelocityResourcePackInfo;
 import com.velocitypowered.proxy.console.VelocityConsole;
 import com.velocitypowered.proxy.event.VelocityEventManager;
@@ -144,6 +146,7 @@ public class VelocityServer implements ProxyServer, ForwardingAudience {
   private final VelocityEventManager eventManager;
   private final VelocityScheduler scheduler;
   private final VelocityChannelRegistrar channelRegistrar = new VelocityChannelRegistrar();
+  private final VelocityBandwidthManager bandwidthManager;
 
   VelocityServer(final ProxyOptions options) {
     pluginManager = new VelocityPluginManager(this);
@@ -155,6 +158,7 @@ public class VelocityServer implements ProxyServer, ForwardingAudience {
     servers = new ServerMap(this);
     this.options = options;
     this.bossBarManager = new AdventureBossBarManager();
+    this.bandwidthManager = new VelocityBandwidthManager(this);
   }
 
   public KeyPair getServerKeyPair() {
@@ -493,6 +497,9 @@ public class VelocityServer implements ProxyServer, ForwardingAudience {
 
         timedOut = !eventManager.shutdown() || timedOut;
         timedOut = !scheduler.shutdown() || timedOut;
+        
+        // Shutdown bandwidth manager
+        bandwidthManager.shutdown();
 
         if (timedOut) {
           logger.error("Your plugins took over 10 seconds to shut down.");
@@ -591,6 +598,10 @@ public class VelocityServer implements ProxyServer, ForwardingAudience {
       connectionsByName.put(lowerName, connection);
       connectionsByUuid.put(connection.getUniqueId(), connection);
     }
+    
+    // Register bandwidth tracking for the player
+    bandwidthManager.registerPlayer(connection);
+    
     return true;
   }
 
@@ -603,6 +614,9 @@ public class VelocityServer implements ProxyServer, ForwardingAudience {
     connectionsByName.remove(connection.getUsername().toLowerCase(Locale.US), connection);
     connectionsByUuid.remove(connection.getUniqueId(), connection);
     bossBarManager.onDisconnect(connection);
+    
+    // Unregister bandwidth tracking for the player
+    bandwidthManager.unregisterPlayer(connection.getUniqueId());
   }
 
   @Override
@@ -693,6 +707,11 @@ public class VelocityServer implements ProxyServer, ForwardingAudience {
   @Override
   public VelocityChannelRegistrar getChannelRegistrar() {
     return channelRegistrar;
+  }
+
+  @Override
+  public BandwidthManager getBandwidthManager() {
+    return bandwidthManager;
   }
 
   @Override

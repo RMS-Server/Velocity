@@ -13,6 +13,7 @@ import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.plugin.PluginManager;
 import com.velocitypowered.api.proxy.config.ProxyConfig;
 import com.velocitypowered.api.proxy.messages.ChannelRegistrar;
+import com.velocitypowered.api.proxy.player.BandwidthManager;
 import com.velocitypowered.api.proxy.player.ResourcePackInfo;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
@@ -217,4 +218,11 @@ public interface ProxyServer extends Audience {
    * @return a ResourcePackInfo builder
    */
   ResourcePackInfo.Builder createResourcePackBuilder(String url);
+
+  /**
+   * Gets the {@link BandwidthManager} instance for managing bandwidth statistics.
+   *
+   * @return the bandwidth manager instance
+   */
+  BandwidthManager getBandwidthManager();
 }
