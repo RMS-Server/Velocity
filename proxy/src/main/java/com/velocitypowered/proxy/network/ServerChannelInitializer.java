@@ -54,7 +54,11 @@ public class ServerChannelInitializer extends ChannelInitializer<Channel> {
 
   @Override
   protected void initChannel(final Channel ch) {
+    final MinecraftConnection connection = new MinecraftConnection(ch, this.server);
+    connection.setSessionHandler(new HandshakeSessionHandler(connection, this.server));
+    
     ch.pipeline()
+        .addLast(BANDWIDTH_STATS, new BandwidthStatsHandler(connection))
         .addLast(LEGACY_PING_DECODER, new LegacyPingDecoder())
         .addLast(FRAME_DECODER, new MinecraftVarintFrameDecoder())
         .addLast(READ_TIMEOUT,
@@ -63,12 +67,8 @@ public class ServerChannelInitializer extends ChannelInitializer<Channel> {
         .addLast(LEGACY_PING_ENCODER, LegacyPingEncoder.INSTANCE)
         .addLast(FRAME_ENCODER, MinecraftVarintLengthEncoder.INSTANCE)
         .addLast(MINECRAFT_DECODER, new MinecraftDecoder(ProtocolUtils.Direction.SERVERBOUND))
-        .addLast(MINECRAFT_ENCODER, new MinecraftEncoder(ProtocolUtils.Direction.CLIENTBOUND));
-
-    final MinecraftConnection connection = new MinecraftConnection(ch, this.server);
-    connection.setSessionHandler(new HandshakeSessionHandler(connection, this.server));
-    ch.pipeline().addLast(BANDWIDTH_STATS, new BandwidthStatsHandler(connection));
-    ch.pipeline().addLast(Connections.HANDLER, connection);
+        .addLast(MINECRAFT_ENCODER, new MinecraftEncoder(ProtocolUtils.Direction.CLIENTBOUND))
+        .addLast(Connections.HANDLER, connection);
 
     if (this.server.getConfiguration().isProxyProtocol()) {
       ch.pipeline().addFirst(new HAProxyMessageDecoder());

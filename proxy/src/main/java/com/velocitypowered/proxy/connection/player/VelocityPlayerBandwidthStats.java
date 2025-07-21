@@ -189,8 +189,8 @@ public class VelocityPlayerBandwidthStats implements PlayerBandwidthStats {
       long packetsSentDelta = currentPacketsSent - lastPacketsSent;
       long packetsReceivedDelta = currentPacketsReceived - lastPacketsReceived;
 
-      currentDownloadSpeed = bytesSentDelta / timeInSeconds;
-      currentUploadSpeed = bytesReceivedDelta / timeInSeconds;
+      currentDownloadSpeed = bytesReceivedDelta / timeInSeconds;
+      currentUploadSpeed = bytesSentDelta / timeInSeconds;
       outgoingPacketRate = packetsSentDelta / timeInSeconds;
       incomingPacketRate = packetsReceivedDelta / timeInSeconds;
 
@@ -204,8 +204,8 @@ public class VelocityPlayerBandwidthStats implements PlayerBandwidthStats {
       long totalDurationMs = getTrackingDurationMs();
       if (totalDurationMs > 0) {
         double totalTimeInSeconds = totalDurationMs / 1000.0;
-        averageDownloadSpeed = currentBytesSent / totalTimeInSeconds;
-        averageUploadSpeed = currentBytesReceived / totalTimeInSeconds;
+        averageDownloadSpeed = currentBytesReceived / totalTimeInSeconds;
+        averageUploadSpeed = currentBytesSent / totalTimeInSeconds;
       }
     }
 
