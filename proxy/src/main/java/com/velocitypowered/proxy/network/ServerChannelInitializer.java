@@ -17,6 +17,7 @@
 
 package com.velocitypowered.proxy.network;
 
+import static com.velocitypowered.proxy.network.Connections.BANDWIDTH_STATS;
 import static com.velocitypowered.proxy.network.Connections.FRAME_DECODER;
 import static com.velocitypowered.proxy.network.Connections.FRAME_ENCODER;
 import static com.velocitypowered.proxy.network.Connections.LEGACY_PING_DECODER;
@@ -29,6 +30,7 @@ import com.velocitypowered.proxy.VelocityServer;
 import com.velocitypowered.proxy.connection.MinecraftConnection;
 import com.velocitypowered.proxy.connection.client.HandshakeSessionHandler;
 import com.velocitypowered.proxy.protocol.ProtocolUtils;
+import com.velocitypowered.proxy.protocol.netty.BandwidthStatsHandler;
 import com.velocitypowered.proxy.protocol.netty.LegacyPingDecoder;
 import com.velocitypowered.proxy.protocol.netty.LegacyPingEncoder;
 import com.velocitypowered.proxy.protocol.netty.MinecraftDecoder;
@@ -65,6 +67,7 @@ public class ServerChannelInitializer extends ChannelInitializer<Channel> {
 
     final MinecraftConnection connection = new MinecraftConnection(ch, this.server);
     connection.setSessionHandler(new HandshakeSessionHandler(connection, this.server));
+    ch.pipeline().addLast(BANDWIDTH_STATS, new BandwidthStatsHandler(connection));
     ch.pipeline().addLast(Connections.HANDLER, connection);
 
     if (this.server.getConfiguration().isProxyProtocol()) {
