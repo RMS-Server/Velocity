@@ -76,7 +76,7 @@ public class LoginSessionHandler implements MinecraftSessionHandler {
       System.getProperty("mojang.sessionserver", "https://sessionserver.mojang.com/session/minecraft/hasJoined")
           .concat("?username=%s&serverId=%s");
   private static final String LITTLESKIN_HASJOINED_URL =
-      "https://littleskin.cn/api/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s";
+      "https://sso.rms.net.cn/api/mc/auth/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s";
 
   private final VelocityServer server;
   private final MinecraftConnection mcConnection;
